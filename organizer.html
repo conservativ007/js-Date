@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>organizer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="d-flex justify-content-around">
+        <div><a class="left" href="#">left</a></div>
+        <div class="text"></div>
+        <div><a class="right" href="#">right</a></div>
+      </div>
+      <table class="table table-dark">
+        <tr>
+          <th>пн</th>
+          <th>вт</th>
+          <th>ср</th>
+          <th>чт</th>
+          <th>пт</th>
+          <th>сб</th>
+          <th>вс</th>
+        </tr>
+        </thead>
+        <tbody id="parent">
+
+        </tbody>
+      </table>
+    </div>
+
+    <script type="text/javascript">
+    document.addEventListener('click', (e) => {
+      if(e.target.className != 'right') return;
+      month++;
+      if(month == 12) month = 0;
+      tBody.innerHTML = '';
+      init();
+    });
+
+    document.addEventListener('click', (e) => {
+      if(e.target.className != 'left') return;
+      month--;
+      if(month == -1) month = 11;
+      tBody.innerHTML = '';
+      init();
+      console.log(month);
+    });
+
+      // количество дней в месяце
+      function range(count) {
+	       let arr = [];
+         for (let i = 1; i <= count; i++) {
+           arr.push(i);
+         }
+         return arr;
+      }
+
+      // последний день в месяце
+      function getLastDay(year, month) {
+	       return new Date(year, month + 1, 0).getDate();
+      }
+
+      // номер дня недели первого месяца
+      function getFirstWeekDay(year, month) {
+	       return new Date(year, month, 1).getDay();
+      }
+
+      // номер дня недели последнего месяца
+      function getLastWeekDay(year, month) {
+	       return new Date(year, month + 1, 0).getDay();
+      }
+
+      // дополнения массива пустыми элементами с лева и с права
+      function normalize(arr, firstWeekDay, lastWeekDay) {
+        let last = 7 - lastWeekDay;
+
+        for(let i = 1; i < firstWeekDay; i++){
+          arr.unshift('');
+        }
+
+        for(let i = 1; i <= last; i++){
+          arr.push('');
+        }
+        return arr;
+      }
+
+
+      // разобьём массив в двухмерный
+
+      function chunk(sep, num) {
+        let parent = [];
+        let child = [];
+        let i = 0;
+
+        for(let item of sep){
+          child.push(item);
+          i++;
+          if(i % num == 0){
+            parent.push(child);
+            child = [];
+          }
+        }
+        return parent;
+      }
+
+
+      function createTable(parent, arr) {
+        console.log(arr);
+        for(let item of arr){
+
+          let tr = document.createElement('tr');
+
+          item.forEach(function(i){
+            let td = document.createElement('td');
+            td.innerHTML = i;
+            tr.appendChild(td);
+          });
+
+          parent.appendChild(tr);
+        }
+      }
+
+      // вывод месяца в инфо
+      function info(month){
+
+        let months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+        document.querySelector('.text').innerHTML = months[month];
+      }
+
+
+      function draw(body, year, month){
+
+        // получим текущий месяц
+        let arr = range(getLastDay(year, month));
+
+        // получим первый и последний ДНИ НЕДЕЛИ в месяце
+        let firstWeekDay = getFirstWeekDay(year, month);
+        let lastWeekDay  = getLastWeekDay(year, month);
+
+        // дополним пустыми символами массив
+        let september = normalize(arr, firstWeekDay, lastWeekDay);
+
+        // разобьём массив на двухмерный
+        let septemberChunck = chunk(september, 7);
+
+        createTable(tBody, septemberChunck);
+        info(month);
+      }
+
+      let tBody = document.querySelector('#parent');
+      let now = new Date();
+      let year = now.getFullYear();
+      let month = now.getMonth();
+
+
+      function init(){
+        draw(tBody, year, month);
+      }
+
+      init();
+
+
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  </body>
+</html>
